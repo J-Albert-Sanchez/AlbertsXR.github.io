@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XR Career Opportunities - ALBERT'S XR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --holo-cyan: #00fff9;
+            --holo-magenta: #ff00e5;
+            --holo-purple: #b026ff;
+            --neon-blue: #0066ff;
+            --neon-orange: #ff6b00;
+            --void-black: #000000;
+            --deep-void: #080808;
+            --grid-dark: #0a0a0a;
+            --grid-line: #1a1a2e;
+            --text-bright: #ffffff;
+            --text-glow: #e0e0ff;
+            --text-dim: #666699;
+            --accent-pink: #ff1493;
+            --vr-green: #39ff14;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--void-black);
+            color: var(--text-glow);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            background-position: 0 0, 0 0;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center center;
+            opacity: 0.15;
+            z-index: -2;
+            animation: gridFlow 30s linear infinite;
+        }
+        @keyframes gridFlow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 80px 80px, 80px 80px; }
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 249, 0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 0, 229, 0.12), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(176, 38, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: holoShift 20s ease-in-out infinite;
+        }
+        @keyframes holoShift {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--holo-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 4px var(--holo-cyan);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        header {
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--grid-line);
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 20%, var(--holo-magenta) 40%, var(--holo-purple) 60%, var(--holo-cyan) 80%, transparent);
+            animation: scanBeam 3s linear infinite;
+        }
+        @keyframes scanBeam {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(33.333%); }
+        }
+        .logo-container {
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .logo-main {
+            background: linear-gradient(180deg, var(--holo-cyan) 0%, var(--holo-magenta) 50%, var(--holo-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6));
+        }
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6)) drop-shadow(0 0 40px rgba(255, 0, 229, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(0, 255, 249, 0.8)) drop-shadow(0 0 60px rgba(255, 0, 229, 0.6)); }
+        }
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        nav {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            z-index: 100;
+            border-bottom: 1px solid var(--grid-line);
+            box-shadow: 0 4px 20px rgba(0, 255, 249, 0.1);
+        }
+        .nav-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.05), rgba(176, 38, 255, 0.05));
+            border: 2px solid var(--grid-line);
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            display: inline-block;
+        }
+        .nav-link:hover, .nav-link.active {
+            border-color: var(--holo-cyan);
+            color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.15), rgba(176, 38, 255, 0.1));
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.3), inset 0 0 20px rgba(0, 255, 249, 0.1);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--holo-cyan), transparent);
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-bright);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        h2::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--holo-cyan);
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.6), rgba(20, 20, 40, 0.4));
+            border: 1px solid var(--grid-line);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+        }
+        .card:hover {
+            border-color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.08), rgba(176, 38, 255, 0.05));
+            box-shadow: 0 8px 32px rgba(0, 255, 249, 0.15), inset 0 0 40px rgba(0, 255, 249, 0.05);
+            transform: translateY(-4px);
+        }
+        .card-tag {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--holo-cyan);
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 255, 249, 0.1);
+            border: 1px solid var(--holo-cyan);
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+        }
+        .card h3 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+        .card p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .card-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: var(--holo-cyan);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .card-link::after {
+            content: '→';
+        }
+        .card-link:hover {
+            color: var(--holo-magenta);
+            gap: 0.8rem;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+            border-top: 2px solid var(--grid-line);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-dim);
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 25%, var(--holo-magenta) 50%, var(--holo-cyan) 75%, transparent);
+        }
+        footer p {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        footer .copyright {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: clamp(2rem, 10vw, 4rem); letter-spacing: 0.1em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--void-black); border-left: 1px solid var(--grid-line); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--holo-cyan), var(--holo-purple)); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--holo-magenta), var(--holo-cyan)); }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <header>
+        <div class="logo-container">
+            <h1><span class="logo-main">ALBERT'S XR</span></h1>
+            <div class="subtitle">◆ XR Career Opportunities ◆</div>
+        </div>
+    </header>
+    <nav>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="beginners.html" class="nav-link">Beginner's Hub</a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+        <a href="learn.html" class="nav-link">Learning</a>
+        <a href="hardware.html" class="nav-link">Hardware</a>
+        <a href="events.html" class="nav-link">Events</a>
+        <a href="jobs.html" class="nav-link active">Jobs</a>
+    </nav>
+    <div class="container">
+        <section>
+            <div class="section-header">
+                <h2>XR Career Opportunities</h2>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <span class="card-tag">Job Board</span>
+                    <h3>Jobs in XR</h3>
+                    <p>Curated AR, VR, and MR job opportunities. Search companies for great positions or sign up for free job alerts in the XR industry.</p>
+                    <a href="https://jobsinxr.com/" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Job Board</span>
+                    <h3>XR Jobs Board</h3>
+                    <p>Daily updated positions in XR development, design, production, and more. Over 100+ AR, VR, MR jobs in one place.</p>
+                    <a href="https://www.xrjobsboard.com/" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Job Search</span>
+                    <h3>Indeed - VR/XR Jobs</h3>
+                    <p>Comprehensive job listings for VR/XR developers, engineers, and designers. Filter by location, salary, and experience level.</p>
+                    <a href="https://www.indeed.com/q-virtual-reality-vr-xr-jobs.html" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Job Search</span>
+                    <h3>LinkedIn - VR Developer Jobs</h3>
+                    <p>900+ VR developer positions across the United States. Software engineers, Unity developers, AR/VR specialists, and more.</p>
+                    <a href="https://www.linkedin.com/jobs/vr-developer-jobs" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Job Search</span>
+                    <h3>Dice - Virtual Reality Jobs</h3>
+                    <p>Tech-focused job board with VR gaming developers, AR/VR engineers, 3D designers, and research positions.</p>
+                    <a href="https://www.dice.com/jobs/q-virtual+reality-jobs" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Job Search</span>
+                    <h3>Glassdoor - AR/VR Developer</h3>
+                    <p>290+ AR/VR developer jobs with salary insights, company reviews, and interview questions. Research before you apply.</p>
+                    <a href="https://www.glassdoor.com/Job/ar-vr-developer-jobs-SRCH_KO0,15.htm" class="card-link" target="_blank">Browse Jobs</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Careers Info</span>
+                    <h3>VR/XR Developer Career Guide</h3>
+                    <p>Learn about required skills (C#, C++, Unity, Unreal), salary ranges ($40-$110/hr), and career paths in VR development.</p>
+                    <a href="https://www.ziprecruiter.com/Jobs/Virtual-Reality-Vr-Xr" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Careers Info</span>
+                    <h3>AR Developer Career Guide</h3>
+                    <p>Explore AR development careers, required qualifications, programming skills (ARKit, ARCore, Unity), and industry demand.</p>
+                    <a href="https://www.ziprecruiter.com/Jobs/Augmented-Reality-Developer" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Meta Careers</span>
+                    <h3>Meta Reality Labs</h3>
+                    <p>Join Meta's VR/AR team building the metaverse. Software engineers, researchers, and designers working on Quest and future XR products.</p>
+                    <a href="https://www.metacareers.com/jobs/" class="card-link" target="_blank">View Openings</a>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        <p>Albert's XR - Your Gateway to Extended Reality</p>
+        <p class="copyright">Curated with passion for the XR community</p>
+    </footer>
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            const colors = ['var(--holo-cyan)', 'var(--holo-magenta)', 'var(--holo-purple)'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 4px ${color}`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

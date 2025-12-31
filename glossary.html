@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XR Glossary - ALBERT'S XR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --holo-cyan: #00fff9;
+            --holo-magenta: #ff00e5;
+            --holo-purple: #b026ff;
+            --neon-blue: #0066ff;
+            --neon-orange: #ff6b00;
+            --void-black: #000000;
+            --deep-void: #080808;
+            --grid-dark: #0a0a0a;
+            --grid-line: #1a1a2e;
+            --text-bright: #ffffff;
+            --text-glow: #e0e0ff;
+            --text-dim: #666699;
+            --accent-pink: #ff1493;
+            --vr-green: #39ff14;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--void-black);
+            color: var(--text-glow);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            background-position: 0 0, 0 0;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center center;
+            opacity: 0.15;
+            z-index: -2;
+            animation: gridFlow 30s linear infinite;
+        }
+        @keyframes gridFlow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 80px 80px, 80px 80px; }
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 249, 0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 0, 229, 0.12), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(176, 38, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: holoShift 20s ease-in-out infinite;
+        }
+        @keyframes holoShift {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--holo-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 4px var(--holo-cyan);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        header {
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--grid-line);
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 20%, var(--holo-magenta) 40%, var(--holo-purple) 60%, var(--holo-cyan) 80%, transparent);
+            animation: scanBeam 3s linear infinite;
+        }
+        @keyframes scanBeam {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(33.333%); }
+        }
+        .logo-container {
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .logo-main {
+            background: linear-gradient(180deg, var(--holo-cyan) 0%, var(--holo-magenta) 50%, var(--holo-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6));
+        }
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6)) drop-shadow(0 0 40px rgba(255, 0, 229, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(0, 255, 249, 0.8)) drop-shadow(0 0 60px rgba(255, 0, 229, 0.6)); }
+        }
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        nav {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            z-index: 100;
+            border-bottom: 1px solid var(--grid-line);
+            box-shadow: 0 4px 20px rgba(0, 255, 249, 0.1);
+        }
+        .nav-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.05), rgba(176, 38, 255, 0.05));
+            border: 2px solid var(--grid-line);
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            display: inline-block;
+        }
+        .nav-link:hover, .nav-link.active {
+            border-color: var(--holo-cyan);
+            color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.15), rgba(176, 38, 255, 0.1));
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.3), inset 0 0 20px rgba(0, 255, 249, 0.1);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--holo-cyan), transparent);
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-bright);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        h2::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--holo-cyan);
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.6), rgba(20, 20, 40, 0.4));
+            border: 1px solid var(--grid-line);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+        }
+        .card:hover {
+            border-color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.08), rgba(176, 38, 255, 0.05));
+            box-shadow: 0 8px 32px rgba(0, 255, 249, 0.15), inset 0 0 40px rgba(0, 255, 249, 0.05);
+            transform: translateY(-4px);
+        }
+        .card-tag {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--holo-cyan);
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 255, 249, 0.1);
+            border: 1px solid var(--holo-cyan);
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+        }
+        .card h3 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+        .card p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+            border-top: 2px solid var(--grid-line);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-dim);
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 25%, var(--holo-magenta) 50%, var(--holo-cyan) 75%, transparent);
+        }
+        footer p {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        footer .copyright {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: clamp(2rem, 10vw, 4rem); letter-spacing: 0.1em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--void-black); border-left: 1px solid var(--grid-line); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--holo-cyan), var(--holo-purple)); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--holo-magenta), var(--holo-cyan)); }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <header>
+        <div class="logo-container">
+            <h1><span class="logo-main">ALBERT'S XR</span></h1>
+            <div class="subtitle">◆ XR Dictionary ◆</div>
+        </div>
+    </header>
+    <nav>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="beginners.html" class="nav-link">Beginner's Hub</a>
+        <a href="glossary.html" class="nav-link active">Glossary</a>
+        <a href="learn.html" class="nav-link">Learning</a>
+        <a href="hardware.html" class="nav-link">Hardware</a>
+        <a href="events.html" class="nav-link">Events</a>
+        <a href="jobs.html" class="nav-link">Jobs</a>
+    </nav>
+    <div class="container">
+        <section style="margin-bottom: 3rem;">
+            <div class="card" style="max-width: 100%; background: linear-gradient(135deg, rgba(176, 38, 255, 0.1), rgba(0, 255, 249, 0.05));">
+                <h3 style="color: var(--holo-magenta); margin-bottom: 1rem;">📱 What is XR? The Extended Reality Umbrella</h3>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                    <strong style="color: var(--holo-cyan);">XR (Extended Reality)</strong> is an umbrella term covering all immersive technologies that blend the digital and physical worlds. Think of it as the family name for VR, AR, and MR.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div style="padding: 1rem; background: rgba(0, 255, 249, 0.1); border-left: 3px solid var(--holo-cyan);">
+                        <h4 style="color: var(--holo-cyan); margin-bottom: 0.5rem;">🥽 VR - Virtual Reality</h4>
+                        <p style="font-size: 0.9rem;">Completely digital worlds. You're fully immersed in a computer-generated environment. Example: Beat Saber, Half-Life: Alyx</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(57, 255, 20, 0.1); border-left: 3px solid var(--vr-green);">
+                        <h4 style="color: var(--vr-green); margin-bottom: 0.5rem;">👓 AR - Augmented Reality</h4>
+                        <p style="font-size: 0.9rem;">Digital overlays on the real world. You see reality + computer graphics. Example: Pokémon GO, IKEA Place app</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(255, 0, 229, 0.1); border-left: 3px solid var(--holo-magenta);">
+                        <h4 style="color: var(--holo-magenta); margin-bottom: 0.5rem;">🌐 MR - Mixed Reality</h4>
+                        <p style="font-size: 0.9rem;">Blend of VR and AR. Digital objects interact with real world. Example: Quest 3 passthrough, Vision Pro spatial apps</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>📖 Essential XR Terms (ELI5)</h2>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <span class="card-tag">Display</span>
+                    <h3>FOV (Field of View)</h3>
+                    <p><strong>Technical:</strong> The extent of the observable world seen at any given moment<br><br>
+                    <strong>ELI5:</strong> How much you can see without turning your head. Wider = more immersive. Human eyes = ~210°. Most headsets = 90-110°.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Display</span>
+                    <h3>Refresh Rate (Hz)</h3>
+                    <p><strong>Technical:</strong> Number of times display updates per second<br><br>
+                    <strong>ELI5:</strong> How smooth motion looks. 90Hz = 90 pictures per second. Higher = smoother, less motion sickness. Quest 3 = 120Hz.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Display</span>
+                    <h3>IPD (Interpupillary Distance)</h3>
+                    <p><strong>Technical:</strong> Distance between the centers of your pupils<br><br>
+                    <strong>ELI5:</strong> How far apart your eyes are. Headsets let you adjust lens spacing to match your IPD for clearer, more comfortable viewing.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Tracking</span>
+                    <h3>6DOF (Six Degrees of Freedom)</h3>
+                    <p><strong>Technical:</strong> Tracking movement in 6 directions: forward/back, left/right, up/down, pitch, yaw, roll<br><br>
+                    <strong>ELI5:</strong> You can walk around, duck, lean, and turn naturally. 3DOF = only rotation (no walking).</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Tracking</span>
+                    <h3>Inside-Out Tracking</h3>
+                    <p><strong>Technical:</strong> Cameras on headset track position without external sensors<br><br>
+                    <strong>ELI5:</strong> Headset tracks itself using built-in cameras. No base stations needed! Quest 3 and Vision Pro use this.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Tracking</span>
+                    <h3>Outside-In Tracking</h3>
+                    <p><strong>Technical:</strong> External sensors (base stations) track headset position<br><br>
+                    <strong>ELI5:</strong> Cameras in room corners watch you move. More accurate but requires setup. Valve Index uses this.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Features</span>
+                    <h3>Passthrough</h3>
+                    <p><strong>Technical:</strong> Real-time video feed from external cameras displayed inside headset<br><br>
+                    <strong>ELI5:</strong> See the real world through your VR headset's cameras. Useful for safety and mixed reality. Quest 3 = full color!</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Features</span>
+                    <h3>Hand Tracking</h3>
+                    <p><strong>Technical:</strong> Computer vision system that detects and maps hand/finger positions<br><br>
+                    <strong>ELI5:</strong> Use your bare hands instead of controllers. Headset sees and tracks your fingers. Vision Pro relies heavily on this.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Features</span>
+                    <h3>Eye Tracking</h3>
+                    <p><strong>Technical:</strong> Sensors detect where you're looking for interaction and rendering optimization<br><br>
+                    <strong>ELI5:</strong> Headset knows where you're looking. Look at button = click. Also makes graphics better where you're focused.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Movement</span>
+                    <h3>Locomotion</h3>
+                    <p><strong>Technical:</strong> Methods for moving through virtual environments<br><br>
+                    <strong>ELI5:</strong> How you move in VR. Options: walk naturally, teleport (point & jump), smooth movement (joystick), or room-scale (physical walking).</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Movement</span>
+                    <h3>Room-Scale VR</h3>
+                    <p><strong>Technical:</strong> VR experience that tracks user movement within a defined physical space<br><br>
+                    <strong>ELI5:</strong> Walk around your room and it matches in VR. Need clear space. Guardian boundaries keep you safe from walls.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Hardware</span>
+                    <h3>Standalone vs Tethered</h3>
+                    <p><strong>Technical:</strong> Self-contained system vs PC/console-connected headset<br><br>
+                    <strong>ELI5:</strong> Standalone = all-in-one, wireless (Quest 3). Tethered = plugs into PC/PS5 for more power (Index, PSVR2).</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Hardware</span>
+                    <h3>Foveated Rendering</h3>
+                    <p><strong>Technical:</strong> Rendering technique that displays full detail only where user is looking<br><br>
+                    <strong>ELI5:</strong> Like your eyes - sharp in center, blurry at edges. Saves GPU power. Requires eye tracking. Vision Pro uses this.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Development</span>
+                    <h3>SDK (Software Development Kit)</h3>
+                    <p><strong>Technical:</strong> Collection of software tools for creating applications for specific platform<br><br>
+                    <strong>ELI5:</strong> Toolbox for developers to build VR apps. Meta has Quest SDK, Apple has Vision Pro SDK, etc.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Development</span>
+                    <h3>OpenXR</h3>
+                    <p><strong>Technical:</strong> Open standard for VR/AR application development across platforms<br><br>
+                    <strong>ELI5:</strong> Universal language for VR apps. Write once, works on Quest, Index, PSVR2, etc. Like USB for VR.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Audio</span>
+                    <h3>Spatial Audio</h3>
+                    <p><strong>Technical:</strong> 3D audio that simulates sound sources with directional and positional accuracy<br><br>
+                    <strong>ELI5:</strong> Sounds come from specific directions/distances. Hear footsteps behind you, voices to your left. Dramatically increases immersion.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Content</span>
+                    <h3>Metaverse</h3>
+                    <p><strong>Technical:</strong> Persistent, shared virtual worlds where users interact socially and economically<br><br>
+                    <strong>ELI5:</strong> Virtual universe you can visit anytime. Like Second Life but in VR. Examples: VRChat, Rec Room, Horizon Worlds.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Content</span>
+                    <h3>Spatial Computing</h3>
+                    <p><strong>Technical:</strong> Computing paradigm where applications are aware of and interact with 3D space<br><br>
+                    <strong>ELI5:</strong> Apps that exist in 3D space around you. Apple's term for Vision Pro. Windows float in your room instead of on flat screen.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        <p>Albert's XR - Your Gateway to Extended Reality</p>
+        <p class="copyright">Curated with passion for the XR community</p>
+    </footer>
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            const colors = ['var(--holo-cyan)', 'var(--holo-magenta)', 'var(--holo-purple)'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 4px ${color}`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

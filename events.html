@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XR Events & Conferences - ALBERT'S XR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --holo-cyan: #00fff9;
+            --holo-magenta: #ff00e5;
+            --holo-purple: #b026ff;
+            --neon-blue: #0066ff;
+            --neon-orange: #ff6b00;
+            --void-black: #000000;
+            --deep-void: #080808;
+            --grid-dark: #0a0a0a;
+            --grid-line: #1a1a2e;
+            --text-bright: #ffffff;
+            --text-glow: #e0e0ff;
+            --text-dim: #666699;
+            --accent-pink: #ff1493;
+            --vr-green: #39ff14;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--void-black);
+            color: var(--text-glow);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            background-position: 0 0, 0 0;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center center;
+            opacity: 0.15;
+            z-index: -2;
+            animation: gridFlow 30s linear infinite;
+        }
+        @keyframes gridFlow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 80px 80px, 80px 80px; }
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 249, 0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 0, 229, 0.12), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(176, 38, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: holoShift 20s ease-in-out infinite;
+        }
+        @keyframes holoShift {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--holo-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 4px var(--holo-cyan);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        header {
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--grid-line);
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 20%, var(--holo-magenta) 40%, var(--holo-purple) 60%, var(--holo-cyan) 80%, transparent);
+            animation: scanBeam 3s linear infinite;
+        }
+        @keyframes scanBeam {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(33.333%); }
+        }
+        .logo-container {
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .logo-main {
+            background: linear-gradient(180deg, var(--holo-cyan) 0%, var(--holo-magenta) 50%, var(--holo-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6));
+        }
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6)) drop-shadow(0 0 40px rgba(255, 0, 229, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(0, 255, 249, 0.8)) drop-shadow(0 0 60px rgba(255, 0, 229, 0.6)); }
+        }
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+        nav {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            z-index: 100;
+            border-bottom: 1px solid var(--grid-line);
+            box-shadow: 0 4px 20px rgba(0, 255, 249, 0.1);
+        }
+        .nav-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.05), rgba(176, 38, 255, 0.05));
+            border: 2px solid var(--grid-line);
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            display: inline-block;
+        }
+        .nav-link:hover, .nav-link.active {
+            border-color: var(--holo-cyan);
+            color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.15), rgba(176, 38, 255, 0.1));
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.3), inset 0 0 20px rgba(0, 255, 249, 0.1);
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--holo-cyan), transparent);
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-bright);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        h2::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--holo-cyan);
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.6), rgba(20, 20, 40, 0.4));
+            border: 1px solid var(--grid-line);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+        }
+        .card:hover {
+            border-color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.08), rgba(176, 38, 255, 0.05));
+            box-shadow: 0 8px 32px rgba(0, 255, 249, 0.15), inset 0 0 40px rgba(0, 255, 249, 0.05);
+            transform: translateY(-4px);
+        }
+        .card-tag {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--holo-cyan);
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 255, 249, 0.1);
+            border: 1px solid var(--holo-cyan);
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+        }
+        .card h3 {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+        .card p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .card-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: var(--holo-cyan);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .card-link::after {
+            content: '→';
+        }
+        .card-link:hover {
+            color: var(--holo-magenta);
+            gap: 0.8rem;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+            border-top: 2px solid var(--grid-line);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-dim);
+            position: relative;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--holo-cyan) 25%, var(--holo-magenta) 50%, var(--holo-cyan) 75%, transparent);
+        }
+        footer p {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        footer .copyright {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: clamp(2rem, 10vw, 4rem); letter-spacing: 0.1em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--void-black); border-left: 1px solid var(--grid-line); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--holo-cyan), var(--holo-purple)); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--holo-magenta), var(--holo-cyan)); }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <header>
+        <div class="logo-container">
+            <h1><span class="logo-main">ALBERT'S XR</span></h1>
+            <div class="subtitle">◆ XR Events & Conferences 2025 ◆</div>
+        </div>
+    </header>
+    <nav>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="beginners.html" class="nav-link">Beginner's Hub</a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+        <a href="learn.html" class="nav-link">Learning</a>
+        <a href="hardware.html" class="nav-link">Hardware</a>
+        <a href="events.html" class="nav-link active">Events</a>
+        <a href="jobs.html" class="nav-link">Jobs</a>
+    </nav>
+    <div class="container">
+        <section>
+            <div class="section-header">
+                <h2>XR Events & Conferences 2025</h2>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <span class="card-tag">Jan 7-10, 2025</span>
+                    <h3>CES 2025</h3>
+                    <p>The world's largest consumer tech event featuring cutting-edge XR hardware debuts, keynotes from industry leaders, and hands-on demos. Las Vegas, NV.</p>
+                    <a href="https://www.ces.tech/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Jan 7-10, 2025</span>
+                    <h3>METAVSUMMIT</h3>
+                    <p>7th annual summit bringing together 3000+ participants focused on Web3, AI, and metaverse. Networking with founders, CEOs, and investors. Las Vegas, NV.</p>
+                    <a href="https://metavsummit.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Jan 27-29, 2025</span>
+                    <h3>SPIE AR VR MR Conference</h3>
+                    <p>Premier conference for immersive tech advancements. Leading scientists and engineers unveil new hardware, smart glasses, and transformative applications. San Francisco, CA.</p>
+                    <a href="https://spie.org/conferences-and-exhibitions/ar-vr-mr" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Feb 2-4, 2026</span>
+                    <h3>AWE Asia 2026</h3>
+                    <p>Part of the Augmented World Expo series, the world's leading AR/VR expo with 10+ years of high-quality events. Singapore.</p>
+                    <a href="https://www.awexr.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">March 3-4, 2025</span>
+                    <h3>Industrial Immersive Week</h3>
+                    <p>Leading conference for industrial XR, AR, VR, MR, and digital twin technologies. Industry leaders explore applications in energy, manufacturing, and logistics. Houston, TX.</p>
+                    <a href="https://industrialimmersive.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">March 3-6, 2025</span>
+                    <h3>Mobile World Congress</h3>
+                    <p>World's largest mobile event featuring XR-enabled mobile devices, spatial computing, and major announcements from Lenovo and Qualcomm. Barcelona, Spain.</p>
+                    <a href="https://www.mwcbarcelona.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">March 2025</span>
+                    <h3>SXSW</h3>
+                    <p>Tech, music, film, and culture festival where XR meets creativity. Innovative panels, mind-blowing demos, and immersive multimedia experiences. Austin, TX.</p>
+                    <a href="https://www.sxsw.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">April 2025</span>
+                    <h3>Laval Virtual</h3>
+                    <p>Europe's oldest and largest VR/AR event since 1999. Nearly 200 exhibitors, 5 exhibition halls, and 50+ speakers showcasing latest XR tech. Laval, France.</p>
+                    <a href="https://www.laval-virtual.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">May 8-9, 2025</span>
+                    <h3>XR EXPO</h3>
+                    <p>Europe's premier XR event featuring industry giants, excellent speakers, and best practices. Interactive demos and networking with XR game-changers. Stuttgart, Germany.</p>
+                    <a href="https://www.vdc-fellbach.de/en/xr-expo/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">May 2025</span>
+                    <h3>AWE USA 2025</h3>
+                    <p>The world's #1 AR/VR/MR event. Massive playground for immersive tech with workshops, talks, exhibits, and hands-on demos. Perfect for developers and investors. Santa Clara, CA.</p>
+                    <a href="https://www.awexr.com/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">August 10-14, 2025</span>
+                    <h3>SIGGRAPH 2025</h3>
+                    <p>Premier conference on computer graphics and interactive techniques. Major advancements in VR, AR, MR, and real-time rendering. Vancouver, Canada.</p>
+                    <a href="https://s2025.siggraph.org/" class="card-link" target="_blank">Learn More</a>
+                </div>
+                <div class="card">
+                    <span class="card-tag">September 9, 2025</span>
+                    <h3>AR/VR Policy Conference</h3>
+                    <p>Policy discussions on XR regulation, privacy, and industry standards. Presented by ITIF and XR Association. Washington, DC.</p>
+                    <a href="https://www.arvrpolicy.org/" class="card-link" target="_blank">Learn More</a>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        <p>Albert's XR - Your Gateway to Extended Reality</p>
+        <p class="copyright">Curated with passion for the XR community</p>
+    </footer>
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            const colors = ['var(--holo-cyan)', 'var(--holo-magenta)', 'var(--holo-purple)'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 4px ${color}`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
