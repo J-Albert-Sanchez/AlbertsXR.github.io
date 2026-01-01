@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XR News Feed - ALBERT'S XR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;800&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --holo-cyan: #00fff9;
+            --holo-magenta: #ff00e5;
+            --holo-purple: #b026ff;
+            --neon-blue: #0066ff;
+            --neon-orange: #ff6b00;
+            --void-black: #000000;
+            --deep-void: #080808;
+            --grid-dark: #0a0a0a;
+            --grid-line: #1a1a2e;
+            --text-bright: #ffffff;
+            --text-glow: #e0e0ff;
+            --text-dim: #666699;
+            --accent-pink: #ff1493;
+            --vr-green: #39ff14;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--void-black);
+            color: var(--text-glow);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated 3D Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--grid-line) 25%, var(--grid-line) 26%, transparent 27%, transparent 74%, var(--grid-line) 75%, var(--grid-line) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            background-position: 0 0, 0 0;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center center;
+            opacity: 0.15;
+            z-index: -2;
+            animation: gridFlow 30s linear infinite;
+        }
+
+        @keyframes gridFlow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 80px 80px, 80px 80px; }
+        }
+
+        /* Holographic Gradient Overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 255, 249, 0.15), transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 0, 229, 0.12), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(176, 38, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: holoShift 20s ease-in-out infinite;
+        }
+
+        @keyframes holoShift {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--holo-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 4px var(--holo-cyan);
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 4rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--grid-line);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--holo-cyan) 20%, 
+                var(--holo-magenta) 40%, 
+                var(--holo-purple) 60%, 
+                var(--holo-cyan) 80%, 
+                transparent);
+            animation: scanBeam 3s linear infinite;
+        }
+
+        @keyframes scanBeam {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(33.333%); }
+        }
+
+        .logo-container {
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 7rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-main {
+            background: linear-gradient(180deg, 
+                var(--holo-cyan) 0%, 
+                var(--holo-magenta) 50%, 
+                var(--holo-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoGlow 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6));
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(0, 255, 249, 0.6))
+                        drop-shadow(0 0 40px rgba(255, 0, 229, 0.4));
+            }
+            50% { 
+                filter: drop-shadow(0 0 40px rgba(0, 255, 249, 0.8))
+                        drop-shadow(0 0 60px rgba(255, 0, 229, 0.6));
+            }
+        }
+
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            z-index: 100;
+            border-bottom: 1px solid var(--grid-line);
+            box-shadow: 0 4px 20px rgba(0, 255, 249, 0.1);
+        }
+
+        .nav-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.8rem 1.8rem;
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.05), rgba(176, 38, 255, 0.05));
+            border: 2px solid var(--grid-line);
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            display: inline-block;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            border-color: var(--holo-cyan);
+            color: var(--holo-cyan);
+            background: linear-gradient(135deg, rgba(0, 255, 249, 0.15), rgba(176, 38, 255, 0.1));
+            box-shadow: 
+                0 0 20px rgba(0, 255, 249, 0.3),
+                inset 0 0 20px rgba(0, 255, 249, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--holo-cyan), transparent);
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-bright);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        h2::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--holo-cyan);
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.8rem;
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 30, 0.6), 
+                rgba(20, 20, 40, 0.4));
+            border: 1px solid var(--grid-line);
+            border-left: 3px solid var(--holo-cyan);
+            margin-bottom: 3rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.15);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--holo-cyan);
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--holo-cyan);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .last-update {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .news-card {
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 30, 0.7), 
+                rgba(20, 20, 40, 0.5));
+            border: 1px solid var(--grid-line);
+            border-left: 3px solid var(--holo-purple);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.5s ease-out backwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--holo-cyan), 
+                var(--holo-magenta), 
+                var(--holo-purple));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            border-left-color: var(--holo-cyan);
+            border-color: var(--holo-cyan);
+            box-shadow: 
+                0 12px 40px rgba(0, 255, 249, 0.2),
+                inset 0 0 40px rgba(0, 255, 249, 0.05);
+        }
+
+        .news-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .news-header {
+            padding: 1.8rem;
+            border-bottom: 1px solid var(--grid-line);
+        }
+
+        .news-source {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--holo-cyan);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0, 255, 249, 0.1);
+            border: 1px solid var(--holo-cyan);
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+        }
+
+        .news-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .news-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .news-title a:hover {
+            color: var(--holo-cyan);
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 15px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .news-body {
+            padding: 1.8rem;
+        }
+
+        .news-description {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .news-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--holo-magenta);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .news-link::after {
+            content: '⟫';
+        }
+
+        .news-link:hover {
+            color: var(--holo-cyan);
+            gap: 0.9rem;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--grid-line);
+            border-top-color: var(--holo-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.3);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-state p {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        /* Error State */
+        .error-state {
+            background: linear-gradient(135deg, 
+                rgba(255, 0, 128, 0.1), 
+                rgba(176, 38, 255, 0.05));
+            border: 1px solid var(--holo-magenta);
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.2);
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+
+        .error-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--holo-magenta);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        .error-state p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .refresh-btn {
+            font-family: 'Rajdhani', sans-serif;
+            background: transparent;
+            border: 2px solid var(--holo-cyan);
+            color: var(--holo-cyan);
+            padding: 1rem 2.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .refresh-btn:hover {
+            background: var(--holo-cyan);
+            color: var(--void-black);
+            box-shadow: 0 0 20px rgba(0, 255, 249, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+            border-top: 2px solid var(--grid-line);
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--text-dim);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent,
+                var(--holo-cyan) 25%,
+                var(--holo-magenta) 50%,
+                var(--holo-cyan) 75%,
+                transparent);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        footer .copyright {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: clamp(2rem, 10vw, 4rem);
+                letter-spacing: 0.1em;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                gap: 0.75rem;
+            }
+
+            .nav-link {
+                padding: 0.7rem 1.4rem;
+                font-size: 0.8rem;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--void-black);
+            border-left: 1px solid var(--grid-line);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--holo-cyan), var(--holo-purple));
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--holo-magenta), var(--holo-cyan));
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <h1>
+                <span class="logo-main">ALBERT'S XR</span>
+            </h1>
+            <div class="subtitle">◆ Live XR News Feed ◆</div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="beginners.html" class="nav-link">Beginner's Hub</a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+        <a href="learn.html" class="nav-link">Learning</a>
+        <a href="hardware.html" class="nav-link">Hardware</a>
+        <a href="events.html" class="nav-link">Events</a>
+        <a href="jobs.html" class="nav-link">Jobs</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <section style="margin-bottom: 3rem;">
+            <div class="section-header">
+                <h2>Latest XR News</h2>
+            </div>
+            
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Live Feed Active</span>
+                </div>
+                <div class="last-update" id="lastUpdate">Initializing...</div>
+            </div>
+        </section>
+
+        <!-- News Grid -->
+        <div id="newsContainer">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading latest XR news...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Albert's XR - Your Gateway to Extended Reality</p>
+        <p class="copyright">Curated with passion for the XR community</p>
+    </footer>
+
+    <script>
+        // ========== FLOATING PARTICLES ==========
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            
+            const colors = ['var(--holo-cyan)', 'var(--holo-magenta)', 'var(--holo-purple)'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 4px ${color}`;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // ========== LIVE RSS FEED INTEGRATION ==========
+        
+        // Configuration
+        const CONFIG = {
+            // Curated XR news RSS feeds - Top sources for 2025-2026
+            RSS_FEEDS: [
+                // Major XR News Sites
+                'https://www.roadtovr.com/feed/',                    // Road to VR
+                'https://uploadvr.com/feed/',                        // UploadVR
+                'https://skarredghost.com/feed/',                    // SkarredGhost (The Ghost Howls)
+                'https://xrtoday.com/feed/',                         // XR Today
+                
+                // Tech News with XR Coverage
+                'https://techcrunch.com/tag/virtual-reality/feed/',  // TechCrunch VR
+                'https://techcrunch.com/tag/augmented-reality/feed/', // TechCrunch AR
+                'https://blog.google/products/google-ar-vr/rss/',    // Google AR & VR Blog
+                
+                // Industry & Business Focus
+                'https://hypergridbusiness.com/feed/',               // Hypergrid Business
+                'https://immersivewire.com/feed/',                   // Immersive Wire
+                
+                // AR Specific
+                'https://augmented.reality.news/rss.xml',            // Augmented Reality News
+                
+                // Additional Quality Sources
+                'https://www.xra.org/feed/',                         // XR Association
+                'https://extendedreality.news/feed/'                 // Extended Reality News
+            ],
+            RSS_TO_JSON_API: 'https://api.rss2json.com/v1/api.json',
+            UPDATE_INTERVAL: 5 * 60 * 1000, // 5 minutes
+            MAX_ITEMS: 50, // Show more items on dedicated page
+            API_KEY: '' // Optional: get free key from rss2json.com for higher limits
+        };
+
+        // State
+        let allNews = [];
+        let updateTimer = null;
+
+        // DOM Elements
+        const newsContainer = document.getElementById('newsContainer');
+        const lastUpdateElement = document.getElementById('lastUpdate');
+
+        // Fetch news from a single RSS feed
+        async function fetchFeed(feedUrl) {
+            const params = new URLSearchParams({
+                rss_url: feedUrl,
+                api_key: CONFIG.API_KEY,
+                count: 10
+            });
+
+            const response = await fetch(`${CONFIG.RSS_TO_JSON_API}?${params}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.status !== 'ok') {
+                throw new Error(`RSS API error: ${data.message}`);
+            }
+            
+            return data.items.map(item => ({
+                title: item.title,
+                link: item.link,
+                description: stripHtml(item.description || item.content || '').substring(0, 200) + '...',
+                pubDate: new Date(item.pubDate),
+                source: data.feed.title,
+                thumbnail: item.thumbnail || item.enclosure?.link || null
+            }));
+        }
+
+        // Fetch all feeds
+        async function fetchAllNews() {
+            try {
+                const feedPromises = CONFIG.RSS_FEEDS.map(feedUrl => 
+                    fetchFeed(feedUrl).catch(err => {
+                        console.warn(`Failed to fetch ${feedUrl}:`, err);
+                        return [];
+                    })
+                );
+
+                const results = await Promise.all(feedPromises);
+                const combinedNews = results.flat();
+                
+                // Sort by date (newest first) and limit
+                allNews = combinedNews
+                    .sort((a, b) => b.pubDate - a.pubDate)
+                    .slice(0, CONFIG.MAX_ITEMS);
+                
+                return allNews;
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                throw error;
+            }
+        }
+
+        // Strip HTML tags from text
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        // Format relative time
+        function getRelativeTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Render news cards
+        function renderNews(newsItems) {
+            if (!newsItems || newsItems.length === 0) {
+                newsContainer.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-title">NO NEWS AVAILABLE</div>
+                        <p>Unable to load XR news at this time.</p>
+                        <button class="refresh-btn" onclick="loadNews()">RETRY</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const newsCards = newsItems.map((item, index) => `
+                <article class="news-card" style="animation-delay: ${index * 0.03}s">
+                    <div class="news-header">
+                        <div class="news-source">${escapeHtml(item.source)}</div>
+                        <h3 class="news-title">
+                            <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
+                                ${escapeHtml(item.title)}
+                            </a>
+                        </h3>
+                        <div class="news-meta">
+                            <span>${getRelativeTime(item.pubDate)}</span>
+                        </div>
+                    </div>
+                    <div class="news-body">
+                        <p class="news-description">${escapeHtml(item.description)}</p>
+                        <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="news-link">
+                            Read Full Article
+                        </a>
+                    </div>
+                </article>
+            `).join('');
+
+            newsContainer.innerHTML = `<div class="news-grid">${newsCards}</div>`;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Update last update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            lastUpdateElement.textContent = `Last update: ${now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+            })}`;
+        }
+
+        // Main load function
+        async function loadNews() {
+            try {
+                newsContainer.innerHTML = `
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading latest XR news...</p>
+                    </div>
+                `;
+
+                const news = await fetchAllNews();
+                renderNews(news);
+                updateTimestamp();
+                
+                console.log(`✓ Loaded ${news.length} news items from ${CONFIG.RSS_FEEDS.length} sources`);
+            } catch (error) {
+                console.error('Failed to load news:', error);
+                newsContainer.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-title">ERROR LOADING NEWS</div>
+                        <p>${escapeHtml(error.message)}</p>
+                        <button class="refresh-btn" onclick="loadNews()">RETRY</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Setup auto-refresh
+        function startAutoRefresh() {
+            if (updateTimer) {
+                clearInterval(updateTimer);
+            }
+            
+            updateTimer = setInterval(() => {
+                console.log('🔄 Auto-refreshing news...');
+                loadNews();
+            }, CONFIG.UPDATE_INTERVAL);
+            
+            console.log(`🔄 Auto-refresh enabled (every ${CONFIG.UPDATE_INTERVAL / 60000} minutes)`);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing XR News Feed...');
+            console.log(`📡 Monitoring ${CONFIG.RSS_FEEDS.length} RSS feeds`);
+            loadNews();
+            startAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (updateTimer) {
+                clearInterval(updateTimer);
+            }
+        });
+    </script>
+</body>
+</html>
