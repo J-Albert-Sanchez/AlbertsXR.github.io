@@ -687,7 +687,7 @@
         <!-- Latest News Section -->
         <section style="margin-bottom: 5rem;">
             <div class="section-header">
-                <h2>Latest XR News</h2>
+                <h2><a href="xr-news-feed.html" style="color: inherit; text-decoration: none;">Latest XR News</a></h2>
             </div>
             <div class="news-grid" id="newsContainer">
                 <div style="text-align: center; padding: 3rem; color: var(--text-dim);">
@@ -749,7 +749,7 @@
     </footer>
 
     <script>
-        // Create floating particles
+        // ========== FLOATING PARTICLES ==========
         const particlesContainer = document.getElementById('particles');
         for (let i = 0; i < 30; i++) {
             const particle = document.createElement('div');
@@ -766,78 +766,144 @@
             particlesContainer.appendChild(particle);
         }
 
-        // Load fallback news
-        function getFallbackNews() {
-            return [
-                {
-                    title: "Meta Quest 3S Announced: More Affordable Entry Point to VR",
-                    description: "Meta unveils the Quest 3S, a budget-friendly version of the Quest 3 with the same powerful Snapdragon XR2 Gen 2 processor but at a lower price point.",
-                    source: "UploadVR",
-                    url: "https://uploadvr.com",
-                    publishedAt: new Date(Date.now() - 2 * 3600000)
-                },
-                {
-                    title: "Apple Vision Pro Expands to New Markets in 2025",
-                    description: "Apple announces Vision Pro availability in additional countries, bringing spatial computing to new regions with enhanced productivity features.",
-                    source: "Road to VR",
-                    url: "https://roadtovr.com",
-                    publishedAt: new Date(Date.now() - 5 * 3600000)
-                },
-                {
-                    title: "PlayStation VR2 Gets Major Game Lineup Announcement",
-                    description: "Sony reveals upcoming VR2 titles including AAA franchises and indie gems, showcasing the platform's growing library and commitment to VR gaming.",
-                    source: "UploadVR",
-                    url: "https://uploadvr.com",
-                    publishedAt: new Date(Date.now() - 8 * 3600000)
-                },
-                {
-                    title: "VRChat Introduces New Avatar Dynamics System",
-                    description: "VRChat rolls out advanced avatar physics and interaction systems, enabling more realistic movements and social interactions in the virtual world.",
-                    source: "Road to VR",
-                    url: "https://roadtovr.com",
-                    publishedAt: new Date(Date.now() - 12 * 3600000)
-                },
-                {
-                    title: "Valve Index 2 Rumors Suggest 2025 Release Window",
-                    description: "Industry insiders hint at Valve's next-generation VR headset featuring improved optics, wireless capabilities, and integration with Steam Deck technology.",
-                    source: "UploadVR",
-                    url: "https://uploadvr.com",
-                    publishedAt: new Date(Date.now() - 18 * 3600000)
-                }
-            ];
+        // ========== LIVE RSS FEED INTEGRATION ==========
+        
+        // Configuration
+        const CONFIG = {
+            // Curated XR news RSS feeds - Top sources for 2025-2026
+            RSS_FEEDS: [
+                // Major XR News Sites
+                'https://www.roadtovr.com/feed/',                    // Road to VR
+                'https://uploadvr.com/feed/',                        // UploadVR
+                'https://skarredghost.com/feed/',                    // SkarredGhost (The Ghost Howls)
+                'https://xrtoday.com/feed/',                         // XR Today
+                
+                // Tech News with XR Coverage
+                'https://techcrunch.com/tag/virtual-reality/feed/',  // TechCrunch VR
+                'https://techcrunch.com/tag/augmented-reality/feed/', // TechCrunch AR
+                'https://blog.google/products/google-ar-vr/rss/',    // Google AR & VR Blog
+                
+                // Industry & Business Focus
+                'https://hypergridbusiness.com/feed/',               // Hypergrid Business
+                'https://immersivewire.com/feed/',                   // Immersive Wire
+                
+                // AR Specific
+                'https://augmented.reality.news/rss.xml',            // Augmented Reality News
+                
+                // Additional Quality Sources
+                'https://www.xra.org/feed/',                         // XR Association
+                'https://extendedreality.news/feed/'                 // Extended Reality News
+            ],
+            RSS_TO_JSON_API: 'https://api.rss2json.com/v1/api.json',
+            UPDATE_INTERVAL: 5 * 60 * 1000, // 5 minutes
+            MAX_ITEMS: 15,
+            API_KEY: '' // Optional: get free key from rss2json.com for higher limits
+        };
+
+        // State
+        let allNews = [];
+        let updateTimer = null;
+
+        // Fetch news from a single RSS feed
+        async function fetchFeed(feedUrl) {
+            const params = new URLSearchParams({
+                rss_url: feedUrl,
+                api_key: CONFIG.API_KEY,
+                count: 10
+            });
+
+            const response = await fetch(`${CONFIG.RSS_TO_JSON_API}?${params}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.status !== 'ok') {
+                throw new Error(`RSS API error: ${data.message}`);
+            }
+            
+            return data.items.map(item => ({
+                title: item.title,
+                url: item.link,
+                description: stripHtml(item.description || item.content || '').substring(0, 200) + '...',
+                publishedAt: new Date(item.pubDate),
+                source: data.feed.title,
+                thumbnail: item.thumbnail || item.enclosure?.link || null
+            }));
         }
 
-        function timeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            const intervals = {
-                year: 31536000,
-                month: 2592000,
-                week: 604800,
-                day: 86400,
-                hour: 3600,
-                minute: 60
-            };
-            
-            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-                const interval = Math.floor(seconds / secondsInUnit);
-                if (interval >= 1) {
-                    return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
-                }
+        // Fetch all feeds
+        async function fetchAllNews() {
+            try {
+                const feedPromises = CONFIG.RSS_FEEDS.map(feedUrl => 
+                    fetchFeed(feedUrl).catch(err => {
+                        console.warn(`Failed to fetch ${feedUrl}:`, err);
+                        return [];
+                    })
+                );
+
+                const results = await Promise.all(feedPromises);
+                const combinedNews = results.flat();
+                
+                // Sort by date (newest first) and limit
+                allNews = combinedNews
+                    .sort((a, b) => b.publishedAt - a.publishedAt)
+                    .slice(0, CONFIG.MAX_ITEMS);
+                
+                return allNews;
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                throw error;
             }
-            return 'Just now';
+        }
+
+        // Strip HTML tags from text
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        // Format relative time
+        function timeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
         // Display news
         function displayNews(articles) {
-            const newsHTML = articles.slice(0, 5).map(article => `
-                <div class="news-card" onclick="window.open('${article.url}', '_blank')">
-                    <div class="news-header">
-                        <span class="news-source">${article.source}</span>
-                        <span class="news-time">${timeAgo(new Date(article.publishedAt))}</span>
+            if (!articles || articles.length === 0) {
+                document.getElementById('newsContainer').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-dim);">
+                        <p style="font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.2em;">
+                            Unable to load news. Please try again later.
+                        </p>
                     </div>
-                    <h3 class="news-title">${article.title}</h3>
-                    <p class="news-description">${article.description}</p>
-                    <a href="${article.url}" class="news-link" target="_blank" onclick="event.stopPropagation()">
+                `;
+                return;
+            }
+
+            const newsHTML = articles.slice(0, 5).map(article => `
+                <div class="news-card" onclick="window.open('${escapeHtml(article.url)}', '_blank')">
+                    <div class="news-header">
+                        <span class="news-source">${escapeHtml(article.source)}</span>
+                        <span class="news-time">${timeAgo(article.publishedAt)}</span>
+                    </div>
+                    <h3 class="news-title">${escapeHtml(article.title)}</h3>
+                    <p class="news-description">${escapeHtml(article.description)}</p>
+                    <a href="${escapeHtml(article.url)}" class="news-link" target="_blank" onclick="event.stopPropagation()">
                         Read Full Article
                     </a>
                 </div>
@@ -846,8 +912,65 @@
             document.getElementById('newsContainer').innerHTML = newsHTML;
         }
 
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Main load function
+        async function loadNews() {
+            try {
+                const news = await fetchAllNews();
+                displayNews(news);
+                console.log(`✓ Loaded ${news.length} news items from ${CONFIG.RSS_FEEDS.length} sources`);
+            } catch (error) {
+                console.error('Failed to load news:', error);
+                // Show fallback message on error
+                document.getElementById('newsContainer').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-dim);">
+                        <p style="font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.2em;">
+                            Unable to load live news. Check console for details.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // Setup auto-refresh
+        function startAutoRefresh() {
+            if (updateTimer) {
+                clearInterval(updateTimer);
+            }
+            
+            updateTimer = setInterval(() => {
+                console.log('🔄 Auto-refreshing news...');
+                loadNews();
+            }, CONFIG.UPDATE_INTERVAL);
+            
+            console.log(`🔄 Auto-refresh enabled (every ${CONFIG.UPDATE_INTERVAL / 60000} minutes)`);
+        }
+
         // Initialize on page load
-        displayNews(getFallbackNews());
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing XR News Feed...');
+            console.log(`📡 Monitoring ${CONFIG.RSS_FEEDS.length} RSS feeds`);
+            loadNews();
+            startAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (updateTimer) {
+                clearInterval(updateTimer);
+            }
+        });
     </script>
 </body>
 </html>
